@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mobile Game Ad Video Analyzer & Creative Auditor</title>
+    <meta name="description" content="An advanced prototype to evaluate mobile game ad video performance using Gemini and Gemma models.">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+
+    <!-- Header bar -->
+    <header>
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                </svg>
+            </div>
+            <h1>CreativeVideo.AI</h1>
+        </div>
+        <div style="display:flex; align-items:center; gap:1.5rem;">
+            <div style="font-size:0.8rem; color:var(--text-secondary); background:rgba(255,255,255,0.02); border:1px solid var(--glass-border); padding:0.4rem 0.8rem; border-radius:6px; display:flex; align-items:center; gap:0.5rem;">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:{% if ffmpeg_available %}var(--accent-emerald){% else %}var(--accent-amber){% endif %};"></span>
+                <span>FFmpeg Mode: {% if ffmpeg_available %}Active{% else %}Inactive (Fallback Active){% endif %}</span>
+            </div>
+            <button class="new-analysis-btn" id="new-analysis-btn">Upload Video</button>
+        </div>
+    </header>
+
+    <!-- App Main Layout Grid -->
+    <div class="app-container">
+        
+        <!-- Left Sidebar: Historical Runs -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Analysis History</h2>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- Javascript will load items here -->
+                <div style="text-align:center; padding:3rem 1rem; color:var(--text-muted);">
+                    Loading history...
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Main View Panel -->
+        <main class="main-content" id="main-content">
+            <!-- Initial, Loading, Progress, or Completed view renders here dynamically -->
+            <div class="empty-state">
+                <div class="empty-state-icon">🎥</div>
+                <h2>No Video Selected</h2>
+                <p>Select an analysis run from the sidebar history list, or upload a new ad video to get started.</p>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Script loading -->
+    <script src="{% static 'app.js' %}"></script>
+</body>
+</html>
