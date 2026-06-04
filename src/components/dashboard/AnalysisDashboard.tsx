@@ -89,10 +89,10 @@ export function AnalysisDashboard({ data, onReanalyze }: { data: any, onReanalyz
                 <div
                   key={idx}
                   onClick={() => handleTimelineClick(seg.timestamp_start)}
-                  className="bg-white/5 border border-glass-border rounded-xl p-4 cursor-pointer hover:bg-white/10 hover:border-accent-cyan hover:-translate-y-0.5 transition-all focus:border-accent-cyan"
+                  className="bg-white/5 border border-glass-border rounded-xl p-4 cursor-pointer hover:bg-white/10 hover:border-brand-primary hover:-translate-y-0.5 transition-all focus:border-brand-primary"
                 >
                   <div className="flex justify-between mb-2">
-                    <span className="text-accent-cyan font-bold text-sm bg-accent-cyan/10 px-2 py-0.5 rounded">
+                    <span className="text-brand-primary font-bold text-sm bg-brand-primary/10 px-2 py-0.5 rounded">
                       ⏱ {seg.timestamp_start} - {seg.timestamp_end}
                     </span>
                     <span className="text-xs text-text-secondary bg-white/5 px-2 py-0.5 rounded font-medium">

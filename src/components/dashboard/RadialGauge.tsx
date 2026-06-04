@@ -47,14 +47,14 @@ export function RadialGauge({ value, maxVal = 10, isInt = false, title, desc, ty
         <svg className="w-[120px] h-[120px] -rotate-90">
           <defs>
             {isScore ? (
-              <linearGradient id="cyan-blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#06b6d4" />
-                <stop offset="100%" stopColor="#3b82f6" />
+              <linearGradient id="purple-brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#8b00ff" />
+                <stop offset="100%" stopColor="#c362ff" />
               </linearGradient>
             ) : (
-              <linearGradient id="purple-pink-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#8b5cf6" />
-                <stop offset="100%" stopColor="#f43f5e" />
+              <linearGradient id="purple-light-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#aa1ffe" />
+                <stop offset="100%" stopColor="#e1b0ff" />
               </linearGradient>
             )}
           </defs>
@@ -67,7 +67,7 @@ export function RadialGauge({ value, maxVal = 10, isInt = false, title, desc, ty
           <circle 
             cx="60" cy="60" r="50" 
             fill="none" 
-            stroke={isScore ? "url(#cyan-blue-grad)" : "url(#purple-pink-grad)"}
+            stroke={isScore ? "url(#purple-brand-grad)" : "url(#purple-light-grad)"}
             strokeWidth="10" 
             strokeLinecap="round"
             strokeDasharray={maxOffset}
@@ -75,7 +75,7 @@ export function RadialGauge({ value, maxVal = 10, isInt = false, title, desc, ty
             style={{ 
               strokeDashoffset, 
               transition: "stroke-dashoffset 1s ease-out",
-              filter: isScore ? "drop-shadow(0 0 6px rgba(6, 182, 212, 0.5))" : "drop-shadow(0 0 6px rgba(139, 92, 246, 0.5))"
+              filter: isScore ? "drop-shadow(0 0 6px rgba(170, 31, 254, 0.5))" : "drop-shadow(0 0 6px rgba(225, 176, 255, 0.5))"
             }}
           />
         </svg>

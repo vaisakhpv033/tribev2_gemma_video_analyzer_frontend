@@ -27,7 +27,7 @@ export function HistorySidebar({ analyses, activeAnalysisId, onSelectAnalysis }:
             onClick={() => onSelectAnalysis(item.id)}
             className={`p-4 rounded-xl cursor-pointer transition-all border ${
               isActive
-                ? "bg-accent-cyan/10 border-accent-cyan shadow-[0_4px_20px_rgba(6,182,212,0.05)]"
+                ? "bg-brand-primary/10 border-brand-primary shadow-[0_4px_20px_rgba(170,31,254,0.05)]"
                 : "bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10 hover:translate-x-1"
             }`}
           >

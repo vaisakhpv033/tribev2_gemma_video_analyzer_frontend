@@ -33,8 +33,8 @@ export function ProcessingScreen({ analysisId, onComplete }: { analysisId: strin
   return (
     <div className="max-w-[600px] w-full mx-auto my-12 text-center animate-fade-in px-4">
       <div className="relative w-32 h-32 mx-auto mb-8">
-        <div className="absolute inset-0 rounded-full border-4 border-white/5 border-t-accent-cyan animate-spin"></div>
-        <div className="absolute inset-[15px] rounded-full bg-accent-cyan/5 animate-[pulse-slow_2s_infinite]"></div>
+        <div className="absolute inset-0 rounded-full border-4 border-white/5 border-t-brand-primary animate-spin"></div>
+        <div className="absolute inset-[15px] rounded-full bg-brand-primary/5 animate-[pulse-slow_2s_infinite]"></div>
       </div>
       
       <h2 className="text-2xl font-bold mb-2 bg-[image:var(--background-image-grad-primary)] bg-clip-text text-transparent">
@@ -94,8 +94,8 @@ function StepItem({ index, title, activeDesc, status, mode }: StepItemProps) {
   const isCompleted = s === "completed";
 
   return (
-    <div className={`flex items-center gap-4 mb-4 last:mb-0 ${isActive ? 'text-accent-cyan font-medium' : isCompleted ? 'text-accent-emerald' : 'text-text-muted'}`}>
-      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold shrink-0 ${isCompleted ? 'bg-accent-emerald border-accent-emerald text-bg-darker' : isActive ? 'border-accent-cyan' : 'border-current'}`}>
+    <div className={`flex items-center gap-4 mb-4 last:mb-0 ${isActive ? 'text-brand-primary font-medium' : isCompleted ? 'text-accent-emerald' : 'text-text-muted'}`}>
+      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold shrink-0 ${isCompleted ? 'bg-accent-emerald border-accent-emerald text-bg-darker' : isActive ? 'border-brand-primary' : 'border-current'}`}>
         {isCompleted ? <CheckCircle2 className="w-4 h-4 text-bg-darker" /> : index + 1}
       </div>
       <span>{isActive && activeDesc ? activeDesc : title}</span>

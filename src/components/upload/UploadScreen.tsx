@@ -66,9 +66,9 @@ export function UploadScreen({ onUploadSuccess }: { onUploadSuccess: (id: string
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-12 cursor-pointer transition-all mb-8 ${isDragging || file ? 'border-accent-cyan bg-accent-cyan/5' : 'border-white/15 hover:border-accent-cyan hover:bg-accent-cyan/5'}`}
+            className={`border-2 border-dashed rounded-xl p-12 cursor-pointer transition-all mb-8 ${isDragging || file ? 'border-brand-primary bg-brand-primary/5' : 'border-white/15 hover:border-brand-primary hover:bg-brand-primary/5'}`}
           >
-            <Zap className="w-12 h-12 text-accent-cyan mx-auto mb-4 animate-[pulse-slow_2s_infinite]" />
+            <Zap className="w-12 h-12 text-brand-primary mx-auto mb-4 animate-[pulse-slow_2s_infinite]" />
             <h3 className="text-lg font-semibold mb-1">Select Video File</h3>
             <p className="text-text-secondary">Drag and drop your video file here, or click to browse</p>
             <p className="text-xs text-text-muted mt-2">Supports MP4, MOV, WebM (Max 50MB)</p>
@@ -108,7 +108,7 @@ export function UploadScreen({ onUploadSuccess }: { onUploadSuccess: (id: string
           <Button 
             type="submit" 
             disabled={!file || isUploading}
-            className="w-full bg-[image:var(--background-image-grad-primary)] text-white h-12 text-base font-semibold hover:-translate-y-[1px] hover:shadow-[0_6px_20px_rgba(6,182,212,0.4)] transition-all shadow-[0_4px_15px_rgba(6,182,212,0.2)] border-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+            className="w-full bg-[image:var(--background-image-grad-primary)] text-white h-12 text-base font-semibold hover:-translate-y-[1px] hover:shadow-[0_6px_20px_rgba(170,31,254,0.4)] transition-all shadow-[0_4px_15px_rgba(170,31,254,0.2)] border-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
           >
             {isUploading ? "Uploading Video File..." : "Launch Creative Analysis"}
           </Button>
