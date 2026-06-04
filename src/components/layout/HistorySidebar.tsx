@@ -7,7 +7,9 @@ function formatDate(isoStr: string) {
 }
 
 export function HistorySidebar({ analyses, activeAnalysisId, onSelectAnalysis }: any) {
-  if (analyses.length === 0) {
+  const safeAnalyses = Array.isArray(analyses) ? analyses : [];
+
+  if (safeAnalyses.length === 0) {
     return (
       <div className="text-center p-8 text-text-muted text-sm">
         No analysis history yet.
@@ -17,7 +19,7 @@ export function HistorySidebar({ analyses, activeAnalysisId, onSelectAnalysis }:
 
   return (
     <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
-      {analyses.map((item: any) => {
+      {safeAnalyses.map((item: any) => {
         const isActive = activeAnalysisId === item.id;
         return (
           <div

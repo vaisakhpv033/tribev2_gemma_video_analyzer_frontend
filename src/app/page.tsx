@@ -13,28 +13,7 @@ export default function Home() {
   const [activeAnalysisId, setActiveAnalysisId] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<any>(null);
 
-  const loadHistory = useCallback(async (selectIdAfterLoad: string | null = null) => {
-    try {
-      const res = await fetch("http://localhost:8000/api/v1/analyses/");
-      const data = await res.json();
-      setAnalyses(data.results || data);
-
-      if (selectIdAfterLoad) {
-        selectAnalysis(selectIdAfterLoad);
-      } else if (data.length > 0 && !activeAnalysisId) {
-        selectAnalysis(data[0].id);
-      }
-    } catch (err) {
-      console.error("Error loading history:", err);
-    }
-  }, [activeAnalysisId]);
-
-  useEffect(() => {
-    loadHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const selectAnalysis = async (id: string) => {
+  const selectAnalysis = useCallback(async (id: string) => {
     setActiveAnalysisId(id);
     try {
       const res = await fetch(`http://localhost:8000/api/v1/analyses/${id}/`);
@@ -43,7 +22,36 @@ export default function Home() {
     } catch (err) {
       console.error("Error loading item:", err);
     }
-  };
+  }, []);
+
+  const loadHistory = useCallback(async (selectIdAfterLoad: string | null = null) => {
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/analyses/");
+      const data = await res.json();
+      
+      const parsedAnalyses = Array.isArray(data.results)
+        ? data.results
+        : Array.isArray(data)
+        ? data
+        : [];
+        
+      setAnalyses(parsedAnalyses);
+
+      if (selectIdAfterLoad) {
+        selectAnalysis(selectIdAfterLoad);
+      } else if (parsedAnalyses.length > 0 && !activeAnalysisId) {
+        selectAnalysis(parsedAnalyses[0].id);
+      }
+    } catch (err) {
+      console.error("Error loading history:", err);
+    }
+  }, [activeAnalysisId, selectAnalysis]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleNewAnalysis = () => {
     setActiveAnalysisId(null);
