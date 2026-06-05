@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { PlaySquare, Lightbulb, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { RadialGauge } from "./RadialGauge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { BrainAnalysisPanel } from "./BrainAnalysisPanel";
 
 function parseTimestampToSeconds(timeStr: string) {
   if (!timeStr) return 0;
@@ -16,13 +17,16 @@ function parseTimestampToSeconds(timeStr: string) {
   str = cleanMatch[0];
 
   const parts = str.split(':').map(Number);
-  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  if (parts.length === 2) return parts[0] * 60 + parts[1];
-  if (parts.length === 1) return parts[0];
-  return 0;
+  let seconds = 0;
+  if (parts.length === 3) seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+  else if (parts.length === 2) seconds = parts[0] * 60 + parts[1];
+  else if (parts.length === 1) seconds = parts[0];
+  
+  console.log(`Parsed timestamp "${timeStr}" to ${seconds} seconds`);
+  return seconds;
 }
 
-export function AnalysisDashboard({ data, onReanalyze }: { data: any, onReanalyze: (id: string) => void }) {
+export function AnalysisDashboard({ data, onReanalyze, onRefresh }: { data: any, onReanalyze: (id: string) => void, onRefresh: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const reports = data.raw_analysis || {};
@@ -35,15 +39,29 @@ export function AnalysisDashboard({ data, onReanalyze }: { data: any, onReanalyz
 
   const handleTimelineClick = (timestamp: string) => {
     const seconds = parseTimestampToSeconds(timestamp);
-    if (videoRef.current) {
-      videoRef.current.currentTime = seconds;
-      videoRef.current.play().catch(error => {
-        console.log("Autoplay prevented, trying muted:", error);
-        if (videoRef.current) {
-          videoRef.current.muted = true;
-          videoRef.current.play().catch(e => console.error("Video play failed:", e));
-        }
-      });
+    const video = videoRef.current;
+    
+    if (video) {
+      console.log(`Seeking video to ${seconds} seconds...`);
+      
+      const playVideo = () => {
+        video.currentTime = seconds;
+        video.play().catch(error => {
+          console.warn("Autoplay prevented, trying muted playback:", error);
+          video.muted = true;
+          video.play().catch(e => console.error("Video play failed completely:", e));
+        });
+      };
+
+      // If video metadata isn't loaded yet, wait for it
+      if (video.readyState >= 1) { // HAVE_METADATA or better
+        playVideo();
+      } else {
+        video.addEventListener('loadedmetadata', playVideo, { once: true });
+        video.load(); // Force load if it hasn't started
+      }
+    } else {
+      console.error("Video ref is null");
     }
   };
 
@@ -117,6 +135,9 @@ export function AnalysisDashboard({ data, onReanalyze }: { data: any, onReanalyz
       {/* Right Column: Reports */}
       <ScrollArea className="h-[85vh]">
         <div className="flex flex-col gap-8 pr-2 pb-12">
+          
+          <BrainAnalysisPanel data={data} onUpdate={onRefresh} />
+
           {/* Scores */}
           <div className="grid grid-cols-2 gap-6">
             <RadialGauge
