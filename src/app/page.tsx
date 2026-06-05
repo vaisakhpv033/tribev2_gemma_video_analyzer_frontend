@@ -15,6 +15,9 @@ export default function Home() {
 
   const selectAnalysis = useCallback(async (id: string) => {
     setActiveAnalysisId(id);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("activeAnalysisId", id);
+    }
     try {
       const res = await fetch(`http://localhost:8000/api/v1/analyses/${id}/`);
       const item = await res.json();
@@ -37,8 +40,13 @@ export default function Home() {
         
       setAnalyses(parsedAnalyses);
 
-      if (selectIdAfterLoad) {
-        selectAnalysis(selectIdAfterLoad);
+      let targetId = selectIdAfterLoad;
+      if (!targetId && typeof window !== "undefined") {
+        targetId = localStorage.getItem("activeAnalysisId");
+      }
+
+      if (targetId && parsedAnalyses.some((a: any) => a.id === targetId)) {
+        selectAnalysis(targetId);
       } else if (parsedAnalyses.length > 0 && !activeAnalysisId) {
         selectAnalysis(parsedAnalyses[0].id);
       }
@@ -56,7 +64,11 @@ export default function Home() {
   const handleNewAnalysis = () => {
     setActiveAnalysisId(null);
     setActiveItem(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("activeAnalysisId");
+    }
   };
+
 
   const handleUploadSuccess = (id: string) => {
     loadHistory(id);
@@ -124,7 +136,11 @@ export default function Home() {
         )}
 
         {activeItem && activeItem.status === "COMPLETED" && (
-          <AnalysisDashboard data={activeItem} onReanalyze={handleReanalyze} />
+          <AnalysisDashboard 
+            data={activeItem} 
+            onReanalyze={handleReanalyze} 
+            onRefresh={() => selectAnalysis(activeItem.id)}
+          />
         )}
       </main>
     </div>
