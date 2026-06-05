@@ -10,6 +10,10 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
   const [activeFeature, setActiveFeature] = useState<string>("global");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [performanceVideos, setPerformanceVideos] = useState<any[]>([]);
+  const [selectedTopVideoId, setSelectedTopVideoId] = useState<string>("");
+  const [selectedBottomVideoId, setSelectedBottomVideoId] = useState<string>("");
+
   const status = data.brain_analysis_status;
   const isPending = status === "PENDING";
   const isCompleted = status === "COMPLETED";
@@ -35,6 +39,32 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
     }
     return () => clearInterval(interval);
   }, [isPending, data.id, onUpdate]);
+
+  // Fetch performance videos
+  useEffect(() => {
+    async function fetchPerformanceVideos() {
+      try {
+        const res = await fetch("http://localhost:8000/api/v1/performance-videos/");
+        if (res.ok) {
+          const vids = await res.json();
+          setPerformanceVideos(vids);
+          
+          const topVideos = vids.filter((v: any) => v.tier === 'TOP');
+          const bottomVideos = vids.filter((v: any) => v.tier === 'BOTTOM');
+          
+          if (topVideos.length > 0) {
+            setSelectedTopVideoId(topVideos[0].id);
+          }
+          if (bottomVideos.length > 0) {
+            setSelectedBottomVideoId(bottomVideos[bottomVideos.length - 1].id);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch performance videos", err);
+      }
+    }
+    fetchPerformanceVideos();
+  }, []);
 
   const handleTriggerAnalysis = async (file?: File) => {
     setIsUploading(true);
@@ -70,14 +100,6 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
     if (file) {
       handleTriggerAnalysis(file);
     }
-  };
-
-  const formatChartData = (timeseriesArray: number[]) => {
-    if (!timeseriesArray) return [];
-    return timeseriesArray.map((val, idx) => ({
-      second: idx + 1,
-      value: val,
-    }));
   };
 
   const featureTabs = [
@@ -132,9 +154,37 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
   // Derive which timeseries array to show based on the active tab
   const activeTabConfig = featureTabs.find(t => t.id === activeFeature);
   const activeTimeseriesKey = activeTabConfig?.key || "global";
-  const chartData = isCompleted && data.brain_timeseries 
-    ? formatChartData(data.brain_timeseries[activeTimeseriesKey]) 
-    : [];
+
+  const getCombinedChartData = () => {
+    const currentTimeseriesArray = isCompleted && data.brain_timeseries ? data.brain_timeseries[activeTimeseriesKey] : [];
+    
+    const selectedTopVideo = performanceVideos.find(v => v.id === selectedTopVideoId);
+    const selectedBottomVideo = performanceVideos.find(v => v.id === selectedBottomVideoId);
+
+    const topTimeseriesArray = selectedTopVideo?.brain_timeseries?.[activeTimeseriesKey] || [];
+    const bottomTimeseriesArray = selectedBottomVideo?.brain_timeseries?.[activeTimeseriesKey] || [];
+
+    const maxLength = Math.max(
+      currentTimeseriesArray?.length || 0,
+      topTimeseriesArray?.length || 0,
+      bottomTimeseriesArray?.length || 0
+    );
+
+    if (maxLength === 0) return [];
+
+    const chartData = [];
+    for (let i = 0; i < maxLength; i++) {
+      chartData.push({
+        second: i + 1,
+        currentValue: currentTimeseriesArray[i] ?? null,
+        topValue: topTimeseriesArray[i] ?? null,
+        bottomValue: bottomTimeseriesArray[i] ?? null,
+      });
+    }
+    return chartData;
+  };
+
+  const chartData = getCombinedChartData();
 
   return (
     <div className="bg-glass-bg border border-glass-border rounded-2xl p-6 mb-8 relative overflow-hidden">
@@ -258,6 +308,41 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
           <div className="bg-black/20 border border-white/5 rounded-xl p-5">
             <h3 className="text-sm font-semibold mb-4 text-text-secondary">Neural Timeseries Breakdown (Per Second)</h3>
             
+            {/* Comparative Selectors */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="flex-1">
+                <label className="text-xs text-text-muted mb-1.5 block font-medium">Compare with Top Video</label>
+                <select 
+                  value={selectedTopVideoId} 
+                  onChange={e => setSelectedTopVideoId(e.target.value)}
+                  className="w-full bg-black/40 border border-white/10 rounded-lg text-sm p-2 text-white focus:outline-none focus:border-accent-emerald transition-colors"
+                >
+                  <option value="">None</option>
+                  {performanceVideos.filter(v => v.tier === 'TOP').map(v => (
+                    <option key={v.id} value={v.id}>
+                      {v.filename.replace('.npz', '')} (CTR: {v.actual_ctr ?? v.brain_predicted_ctr?.toFixed(2)}%)
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="flex-1">
+                <label className="text-xs text-text-muted mb-1.5 block font-medium">Compare with Bottom Video</label>
+                <select 
+                  value={selectedBottomVideoId} 
+                  onChange={e => setSelectedBottomVideoId(e.target.value)}
+                  className="w-full bg-black/40 border border-white/10 rounded-lg text-sm p-2 text-white focus:outline-none focus:border-accent-rose transition-colors"
+                >
+                  <option value="">None</option>
+                  {performanceVideos.filter(v => v.tier === 'BOTTOM').map(v => (
+                    <option key={v.id} value={v.id}>
+                      {v.filename.replace('.npz', '')} (CTR: {v.actual_ctr ?? v.brain_predicted_ctr?.toFixed(2)}%)
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* Tabs */}
             <div className="flex flex-wrap gap-2 mb-6">
               {featureTabs.map(tab => (
@@ -295,19 +380,67 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
                     contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '12px' }}
                     itemStyle={{ color: '#fff' }}
                     labelStyle={{ color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}
-                    formatter={(value: number) => [value.toFixed(4), activeTabConfig?.label]}
+                    formatter={(value: number, name: string) => {
+                      if (name === 'currentValue') return [value.toFixed(4), "Current Video"];
+                      if (name === 'topValue') return [value.toFixed(4), "Top Video"];
+                      if (name === 'bottomValue') return [value.toFixed(4), "Bottom Video"];
+                      return [value.toFixed(4), name];
+                    }}
                     labelFormatter={(label) => `Second ${label}`}
                   />
                   <Line 
                     type="monotone" 
-                    dataKey="value" 
+                    dataKey="currentValue" 
+                    name="currentValue"
                     stroke="var(--color-accent-blue)" 
                     strokeWidth={2}
                     dot={false}
                     activeDot={{ r: 4, fill: "var(--color-accent-blue)", stroke: "#000", strokeWidth: 2 }}
                   />
+                  {selectedTopVideoId && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="topValue" 
+                      name="topValue"
+                      stroke="#10b981" 
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 4, fill: "#10b981", stroke: "#000", strokeWidth: 2 }}
+                    />
+                  )}
+                  {selectedBottomVideoId && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="bottomValue" 
+                      name="bottomValue"
+                      stroke="#ef4444" 
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 4, fill: "#ef4444", stroke: "#000", strokeWidth: 2 }}
+                    />
+                  )}
                 </LineChart>
               </ResponsiveContainer>
+            </div>
+            
+            {/* Chart Legend */}
+            <div className="flex items-center gap-4 mt-4 justify-center">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-0.5 bg-accent-blue"></div>
+                <span className="text-xs text-text-muted">Current Video</span>
+              </div>
+              {selectedTopVideoId && (
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-0.5 bg-[#10b981]"></div>
+                  <span className="text-xs text-text-muted">Top Video</span>
+                </div>
+              )}
+              {selectedBottomVideoId && (
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-0.5 bg-[#ef4444]"></div>
+                  <span className="text-xs text-text-muted">Bottom Video</span>
+                </div>
+              )}
             </div>
             
             <div className="mt-5 space-y-3">
