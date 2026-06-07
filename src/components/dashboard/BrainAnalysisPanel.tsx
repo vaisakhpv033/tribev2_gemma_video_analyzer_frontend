@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { BrainCircuit, Upload, Play, AlertCircle, Loader2, Info } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { API_BASE_URL } from "@/config/api";
 
 export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: () => void }) {
   const [isUploading, setIsUploading] = useState(false);
@@ -25,7 +26,7 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
     if (isPending) {
       interval = setInterval(async () => {
         try {
-          const res = await fetch(`http://localhost:8000/api/v1/analyses/${data.id}/`);
+          const res = await fetch(`${API_BASE_URL}/api/v1/analyses/${data.id}/`);
           if (res.ok) {
             const freshData = await res.json();
             if (freshData.brain_analysis_status !== "PENDING") {
@@ -44,7 +45,7 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
   useEffect(() => {
     async function fetchPerformanceVideos() {
       try {
-        const res = await fetch("http://localhost:8000/api/v1/performance-videos/");
+        const res = await fetch(`${API_BASE_URL}/api/v1/performance-videos/`);
         if (res.ok) {
           const vids = await res.json();
           setPerformanceVideos(vids);
@@ -77,7 +78,7 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/v1/brain-analysis/", {
+      const res = await fetch(`${API_BASE_URL}/api/v1/brain-analysis/`, {
         method: "POST",
         body: formData,
       });
@@ -380,11 +381,12 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
                     contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '12px' }}
                     itemStyle={{ color: '#fff' }}
                     labelStyle={{ color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}
-                    formatter={(value: number, name: string) => {
-                      if (name === 'currentValue') return [value.toFixed(4), "Current Video"];
-                      if (name === 'topValue') return [value.toFixed(4), "Top Video"];
-                      if (name === 'bottomValue') return [value.toFixed(4), "Bottom Video"];
-                      return [value.toFixed(4), name];
+                    formatter={(value: any, name: any) => {
+                      const numVal = typeof value === 'number' ? value : parseFloat(value) || 0;
+                      if (name === 'currentValue') return [numVal.toFixed(4), "Current Video"];
+                      if (name === 'topValue') return [numVal.toFixed(4), "Top Video"];
+                      if (name === 'bottomValue') return [numVal.toFixed(4), "Bottom Video"];
+                      return [numVal.toFixed(4), name];
                     }}
                     labelFormatter={(label) => `Second ${label}`}
                   />

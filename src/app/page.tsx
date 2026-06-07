@@ -7,6 +7,7 @@ import { ProcessingScreen } from "@/components/dashboard/ProcessingScreen";
 import { AnalysisDashboard } from "@/components/dashboard/AnalysisDashboard";
 import { XCircle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { API_BASE_URL } from "@/config/api";
 
 export default function Home() {
   const [analyses, setAnalyses] = useState<any[]>([]);
@@ -19,7 +20,7 @@ export default function Home() {
       localStorage.setItem("activeAnalysisId", id);
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/analyses/${id}/`);
+      const res = await fetch(`${API_BASE_URL}/api/v1/analyses/${id}/`);
       const item = await res.json();
       setActiveItem(item);
     } catch (err) {
@@ -29,7 +30,7 @@ export default function Home() {
 
   const loadHistory = useCallback(async (selectIdAfterLoad: string | null = null) => {
     try {
-      const res = await fetch("http://localhost:8000/api/v1/analyses/");
+      const res = await fetch(`${API_BASE_URL}/api/v1/analyses/`);
       const data = await res.json();
       
       const parsedAnalyses = Array.isArray(data.results)
@@ -82,7 +83,7 @@ export default function Home() {
     if (!confirm('Are you sure you want to re-run the creative analysis for this video?')) return;
     
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/analyses/${id}/reanalyze/`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/analyses/${id}/reanalyze/`, {
         method: 'POST'
       });
       if (!res.ok) {

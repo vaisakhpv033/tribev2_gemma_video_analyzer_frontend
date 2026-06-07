@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, CheckCircle2, CircleDashed } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { API_BASE_URL } from "@/config/api";
 
 export function ProcessingScreen({ analysisId, onComplete }: { analysisId: string, onComplete: (data: any) => void }) {
   const [status, setStatus] = useState("PENDING");
@@ -11,7 +12,7 @@ export function ProcessingScreen({ analysisId, onComplete }: { analysisId: strin
   useEffect(() => {
     const pollInterval = setInterval(async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/analyses/${analysisId}/`);
+        const res = await fetch(`${API_BASE_URL}/api/v1/analyses/${analysisId}/`);
         if (res.ok) {
           const item = await res.json();
           setStatus(item.status);

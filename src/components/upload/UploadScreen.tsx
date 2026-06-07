@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { API_BASE_URL } from "@/config/api";
 
 export function UploadScreen({ onUploadSuccess }: { onUploadSuccess: (id: string) => void }) {
   const [file, setFile] = useState<File | null>(null);
@@ -38,7 +39,7 @@ export function UploadScreen({ onUploadSuccess }: { onUploadSuccess: (id: string
     formData.append("mode", mode);
 
     try {
-      const res = await fetch("http://localhost:8000/api/v1/analyses/", {
+      const res = await fetch(`${API_BASE_URL}/api/v1/analyses/`, {
         method: "POST",
         body: formData,
       });
