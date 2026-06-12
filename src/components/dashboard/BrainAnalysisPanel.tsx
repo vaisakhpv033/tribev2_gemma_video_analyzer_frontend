@@ -14,6 +14,7 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
   const [performanceVideos, setPerformanceVideos] = useState<any[]>([]);
   const [selectedTopVideoId, setSelectedTopVideoId] = useState<string>("");
   const [selectedBottomVideoId, setSelectedBottomVideoId] = useState<string>("");
+  const [selectedCompetitorVideoId, setSelectedCompetitorVideoId] = useState<string>("");
 
   const status = data.brain_analysis_status;
   const isPending = status === "PENDING";
@@ -52,12 +53,16 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
           
           const topVideos = vids.filter((v: any) => v.tier === 'TOP');
           const bottomVideos = vids.filter((v: any) => v.tier === 'BOTTOM');
+          const competitorVideos = vids.filter((v: any) => v.tier === 'COMPETITOR_SUCCESS');
           
           if (topVideos.length > 0) {
             setSelectedTopVideoId(topVideos[0].id);
           }
           if (bottomVideos.length > 0) {
             setSelectedBottomVideoId(bottomVideos[bottomVideos.length - 1].id);
+          }
+          if (competitorVideos.length > 0) {
+            setSelectedCompetitorVideoId(competitorVideos[0].id);
           }
         }
       } catch (err) {
@@ -161,14 +166,17 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
     
     const selectedTopVideo = performanceVideos.find(v => v.id === selectedTopVideoId);
     const selectedBottomVideo = performanceVideos.find(v => v.id === selectedBottomVideoId);
+    const selectedCompetitorVideo = performanceVideos.find(v => v.id === selectedCompetitorVideoId);
 
     const topTimeseriesArray = selectedTopVideo?.brain_timeseries?.[activeTimeseriesKey] || [];
     const bottomTimeseriesArray = selectedBottomVideo?.brain_timeseries?.[activeTimeseriesKey] || [];
+    const competitorTimeseriesArray = selectedCompetitorVideo?.brain_timeseries?.[activeTimeseriesKey] || [];
 
     const maxLength = Math.max(
       currentTimeseriesArray?.length || 0,
       topTimeseriesArray?.length || 0,
-      bottomTimeseriesArray?.length || 0
+      bottomTimeseriesArray?.length || 0,
+      competitorTimeseriesArray?.length || 0
     );
 
     if (maxLength === 0) return [];
@@ -180,6 +188,7 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
         currentValue: currentTimeseriesArray[i] ?? null,
         topValue: topTimeseriesArray[i] ?? null,
         bottomValue: bottomTimeseriesArray[i] ?? null,
+        competitorValue: competitorTimeseriesArray[i] ?? null,
       });
     }
     return chartData;
@@ -310,7 +319,7 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
             <h3 className="text-sm font-semibold mb-4 text-text-secondary">Neural Timeseries Breakdown (Per Second)</h3>
             
             {/* Comparative Selectors */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="flex-1">
                 <label className="text-xs text-text-muted mb-1.5 block font-medium">Compare with Top Video</label>
                 <select 
@@ -338,6 +347,22 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
                   {performanceVideos.filter(v => v.tier === 'BOTTOM').map(v => (
                     <option key={v.id} value={v.id}>
                       {v.filename.replace('.npz', '')} (CTR: {v.actual_ctr ?? v.brain_predicted_ctr?.toFixed(2)}%)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex-1">
+                <label className="text-xs text-text-muted mb-1.5 block font-medium">Compare with Competitor</label>
+                <select 
+                  value={selectedCompetitorVideoId} 
+                  onChange={e => setSelectedCompetitorVideoId(e.target.value)}
+                  className="w-full bg-black/40 border border-white/10 rounded-lg text-sm p-2 text-white focus:outline-none focus:border-[#f59e0b] transition-colors"
+                >
+                  <option value="">None</option>
+                  {performanceVideos.filter(v => v.tier === 'COMPETITOR_SUCCESS').map(v => (
+                    <option key={v.id} value={v.id}>
+                      {v.filename.replace('.npz', '')} (Imp: {v.impressions ?? 'N/A'})
                     </option>
                   ))}
                 </select>
@@ -386,6 +411,7 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
                       if (name === 'currentValue') return [numVal.toFixed(4), "Current Video"];
                       if (name === 'topValue') return [numVal.toFixed(4), "Top Video"];
                       if (name === 'bottomValue') return [numVal.toFixed(4), "Bottom Video"];
+                      if (name === 'competitorValue') return [numVal.toFixed(4), "Competitor Video"];
                       return [numVal.toFixed(4), name];
                     }}
                     labelFormatter={(label) => `Second ${label}`}
@@ -421,6 +447,17 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
                       activeDot={{ r: 4, fill: "#ef4444", stroke: "#000", strokeWidth: 2 }}
                     />
                   )}
+                  {selectedCompetitorVideoId && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="competitorValue" 
+                      name="competitorValue"
+                      stroke="#f59e0b" 
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 4, fill: "#f59e0b", stroke: "#000", strokeWidth: 2 }}
+                    />
+                  )}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -441,6 +478,12 @@ export function BrainAnalysisPanel({ data, onUpdate }: { data: any, onUpdate: ()
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-0.5 bg-[#ef4444]"></div>
                   <span className="text-xs text-text-muted">Bottom Video</span>
+                </div>
+              )}
+              {selectedCompetitorVideoId && (
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-0.5 bg-[#f59e0b]"></div>
+                  <span className="text-xs text-text-muted">Competitor Video</span>
                 </div>
               )}
             </div>
