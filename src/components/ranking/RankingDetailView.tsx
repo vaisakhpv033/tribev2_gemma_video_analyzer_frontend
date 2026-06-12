@@ -30,9 +30,12 @@ export function RankingDetailView({ session }: RankingDetailViewProps) {
   const featureTabs = [
     { id: "global", label: "Overall Engagement" },
     { id: "emotional", label: "Emotional Response" },
-    { id: "orbital", label: "Decision & Reward" },
     { id: "visual", label: "Visual Processing" },
-    { id: "insula", label: "Gut-Level Reaction" },
+    { id: "dorsattn_net", label: "Sustained Attention" },
+    { id: "salventattn_net", label: "Surprise & Novelty" },
+    { id: "auditory", label: "Auditory Processing" },
+    { id: "memory", label: "Memory Encoding" },
+    { id: "language", label: "Narrative Clarity" },
   ];
 
   return (

@@ -19,7 +19,7 @@ export function RankingTimeseriesChart({ videos, activeVideoId, activeFeature }:
   const featureTabs = [
     {
       id: "global",
-      label: "Overall Brain Engagement",
+      label: "Overall Engagement",
       key: "global",
       desc: "Average activity across the entire brain. Higher values mean the ad commands more neurological resources overall.",
     },
@@ -27,25 +27,43 @@ export function RankingTimeseriesChart({ videos, activeVideoId, activeFeature }:
       id: "emotional",
       label: "Emotional Response",
       key: "emotional",
-      desc: "Tracks emotion-processing regions. Higher values indicate moments that triggered empathy, excitement, or urgency.",
-    },
-    {
-      id: "orbital",
-      label: "Decision & Reward",
-      key: "orbital",
-      desc: "Measures reward-evaluation centers. Peaks indicate moments when the viewer is evaluating whether the offer is worth pursuing.",
+      desc: "Tracks emotion-processing regions. Higher values indicate moments that triggered empathy, excitement, or a 'gut-level' pull.",
     },
     {
       id: "visual",
       label: "Visual Processing",
       key: "visual",
-      desc: "Tracks visual cortex intensity. Reflects how much the ad's visuals (motion, colors) capture attention.",
+      desc: "Tracks visual cortex intensity. Reflects how much the ad's visuals (motion, colors, faces) capture visual attention.",
     },
     {
-      id: "insula",
-      label: "Gut-Level Reaction",
-      key: "insula_short",
-      desc: "Measures instinctive reactions. This region drives immediate, subconscious 'pull' toward a product.",
+      id: "dorsattn_net",
+      label: "Sustained Attention",
+      key: "dorsattn_net",
+      desc: "Measures the brain's Dorsal Attention Network. High values mean the viewer is intensely focused on the screen, not daydreaming.",
+    },
+    {
+      id: "salventattn_net",
+      label: "Surprise & Novelty",
+      key: "salventattn_net",
+      desc: "Measures the Salience Network. Spikes indicate moments that the brain flags as unexpected, highly important, or 'wow' moments.",
+    },
+    {
+      id: "auditory",
+      label: "Auditory Processing",
+      key: "auditory",
+      desc: "Tracks how actively the brain is processing sound, voiceovers, or music.",
+    },
+    {
+      id: "memory",
+      label: "Memory Encoding",
+      key: "memory",
+      desc: "Measures activity in regions linked to memory formation. Peaks suggest moments that are likely to be remembered later.",
+    },
+    {
+      id: "language",
+      label: "Narrative Clarity",
+      key: "language",
+      desc: "Tracks language processing centers. High values mean the viewer is actively understanding the storyline or spoken/written words.",
     },
   ];
 
