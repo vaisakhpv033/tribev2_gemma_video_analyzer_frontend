@@ -131,7 +131,7 @@ export default function RankingDetailPage() {
                   <p className="text-text-muted text-sm mt-1">This page will automatically update once ranking is complete.</p>
                 </div>
               ) : (
-                <RankingDetailView session={session} />
+                <RankingDetailView session={session} onSessionUpdated={setSession} />
               )}
             </div>
           ) : null}

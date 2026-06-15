@@ -36,10 +36,13 @@ export function RankingSessionList() {
     }
   };
 
+  // Initial fetch
   useEffect(() => {
     fetchSessions();
-    
-    // Poll if any session is processing
+  }, []);
+
+  // Polling logic
+  useEffect(() => {
     const hasProcessing = sessions.some(s => s.status === "PENDING" || s.status === "PROCESSING");
     if (hasProcessing) {
       const interval = setInterval(fetchSessions, 3000);
@@ -110,9 +113,9 @@ export function RankingSessionList() {
             {session.status === "COMPLETED" && session.top_video && (
               <div className="bg-black/20 rounded-lg p-3 md:w-64 shrink-0 flex items-center justify-between border border-white/5">
                 <div className="overflow-hidden">
-                  <div className="text-[10px] text-text-muted uppercase font-bold tracking-wider mb-0.5 flex items-center gap-1.5">
+                  <div className="text-[8px] text-text-muted uppercase font-bold tracking-wider mb-0.5 flex items-center gap-1.5">
                     <Trophy className="w-3 h-3 text-accent-emerald" />
-                    Top Ranked Video
+                    Top Ranked Video (Relative)
                   </div>
                   <div className="text-sm font-medium truncate" title={session.top_video.filename}>
                     {session.top_video.filename}

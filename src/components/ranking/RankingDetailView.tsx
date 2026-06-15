@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Trophy, TrendingUp, TrendingDown, CheckCircle2, ChevronRight, Activity, AlertCircle } from "lucide-react";
+import { Trophy, TrendingUp, TrendingDown, CheckCircle2, ChevronRight, Activity, AlertCircle, Settings2 } from "lucide-react";
 import { RankingTimeseriesChart } from "./RankingTimeseriesChart";
+import { TweakWeightsModal } from "./TweakWeightsModal";
 import { ScrollArea } from "../ui/scroll-area";
 
 interface RankingDetailViewProps {
   session: any;
+  onSessionUpdated?: (session: any) => void;
 }
 
 const BUSINESS_TERMS: Record<string, string> = {
@@ -21,10 +23,11 @@ const BUSINESS_TERMS: Record<string, string> = {
   "narrative_language": "Narrative Clarity",
 };
 
-export function RankingDetailView({ session }: RankingDetailViewProps) {
+export function RankingDetailView({ session, onSessionUpdated }: RankingDetailViewProps) {
   const sortedVideos = [...(session.videos || [])].sort((a, b) => (a.rank || 0) - (b.rank || 0));
   const [activeVideoId, setActiveVideoId] = useState<string | null>(sortedVideos[0]?.id || null);
   const [activeFeature, setActiveFeature] = useState<string>("global");
+  const [isTweakModalOpen, setIsTweakModalOpen] = useState(false);
 
   const activeVideo = sortedVideos.find(v => v.id === activeVideoId);
 
@@ -159,9 +162,39 @@ export function RankingDetailView({ session }: RankingDetailViewProps) {
             </div>
 
             {/* Dimension Scores Grid */}
-            <h4 className="text-sm font-semibold text-text-secondary mb-4 flex items-center gap-2">
-              <Activity className="w-4 h-4" /> Neurological Dimension Breakdown
-            </h4>
+            <div className="flex items-center justify-between mb-4 mt-6">
+              <h4 className="text-sm font-semibold text-text-secondary flex items-center gap-2">
+                <Activity className="w-4 h-4" /> Neurological Dimension Breakdown
+              </h4>
+            </div>
+
+            {session.result_summary?.effective_weights && (
+              <div className="mb-4 bg-white/5 rounded-lg p-3 border border-white/5 flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-text-muted mb-2 font-medium flex items-center gap-2">
+                    Applied Weights ({session.preset})
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {Object.entries(session.result_summary.effective_weights)
+                      .sort(([, a], [, b]) => (b as number) - (a as number))
+                      .map(([dim, weight]) => (
+                        <div key={dim} className="bg-black/40 border border-white/5 px-2 py-1 rounded text-[10px] flex items-center gap-1.5">
+                          <span className="text-text-muted">{BUSINESS_TERMS[dim] || dim}</span>
+                          <span className="text-accent-blue font-bold">{Math.round((weight as number) * 100)}%</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsTweakModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-medium text-text-secondary hover:text-white transition-colors whitespace-nowrap"
+                >
+                  <Settings2 className="w-3.5 h-3.5" />
+                  Tweak Weights
+                </button>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
               {activeVideo.dimension_scores && Object.entries(activeVideo.dimension_scores).map(([dim, score]) => (
                 <div key={dim} className="bg-white/5 border border-white/5 rounded-lg p-3">
@@ -210,6 +243,15 @@ export function RankingDetailView({ session }: RankingDetailViewProps) {
 
       </div>
       </ScrollArea>
+
+      <TweakWeightsModal 
+        isOpen={isTweakModalOpen} 
+        onClose={() => setIsTweakModalOpen(false)} 
+        session={session} 
+        onSuccess={(updatedSession) => {
+          if (onSessionUpdated) onSessionUpdated(updatedSession);
+        }}
+      />
     </div>
   );
 }

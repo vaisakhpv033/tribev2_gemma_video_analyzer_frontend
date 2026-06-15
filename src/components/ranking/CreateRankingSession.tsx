@@ -15,6 +15,28 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
   const [normalization, setNormalization] = useState("minmax");
   const [files, setFiles] = useState<File[]>([]);
   
+  const [customWeights, setCustomWeights] = useState<Record<string, number>>({
+    emotional_resonance: 5,
+    visual_engagement: 5,
+    attention_capture: 5,
+    sustained_focus: 5,
+    novelty_salience: 5,
+    auditory_impact: 5,
+    memory_encoding: 5,
+    narrative_language: 5,
+  });
+
+  const BUSINESS_TERMS: Record<string, string> = {
+    "emotional_resonance": "Emotional Response",
+    "visual_engagement": "Visual Processing",
+    "attention_capture": "Overall Engagement",
+    "sustained_focus": "Sustained Attention",
+    "novelty_salience": "Surprise & Novelty",
+    "auditory_impact": "Auditory Processing",
+    "memory_encoding": "Memory Encoding",
+    "narrative_language": "Narrative Clarity",
+  };
+
   const [presets, setPresets] = useState<{id: string, name: string}[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +79,21 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
     formData.append("name", name);
     formData.append("preset", preset);
     formData.append("normalization", normalization);
+    
+    if (preset === "custom") {
+      const total = Object.values(customWeights).reduce((sum, val) => sum + val, 0);
+      if (total === 0) {
+        setError("At least one custom weight must be greater than 0.");
+        setIsLoading(false);
+        return;
+      }
+      const normalizedWeights: Record<string, number> = {};
+      Object.entries(customWeights).forEach(([key, val]) => {
+        normalizedWeights[key] = val / total;
+      });
+      formData.append("custom_weights", JSON.stringify(normalizedWeights));
+    }
+
     files.forEach(file => {
       formData.append("npz_files", file);
     });
@@ -141,6 +178,32 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
                 <p className="text-xs text-text-muted mt-2">How raw features are scaled across the uploaded videos.</p>
               </div>
             </div>
+
+            {preset === "custom" && (
+              <div className="bg-white/5 border border-white/10 rounded-xl p-5 animate-in slide-in-from-top-2">
+                <h3 className="text-sm font-medium text-white mb-4">Set Relative Importance (0 - 10)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                  {Object.entries(customWeights).map(([key, val]) => (
+                    <div key={key}>
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="text-xs text-text-secondary">{BUSINESS_TERMS[key] || key}</label>
+                        <span className="text-xs font-bold text-accent-blue">{val}/10</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="1"
+                        value={val}
+                        onChange={(e) => setCustomWeights(prev => ({ ...prev, [key]: parseInt(e.target.value) }))}
+                        className="w-full accent-accent-blue"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-text-muted mt-4">Values are automatically normalized to 100% when submitted.</p>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-2">Upload .npz Files</label>
