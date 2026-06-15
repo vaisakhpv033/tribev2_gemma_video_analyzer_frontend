@@ -4,6 +4,7 @@ import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Trophy, TrendingUp, TrendingDown, CheckCircle2, ChevronRight, Activity, AlertCircle } from "lucide-react";
 import { RankingTimeseriesChart } from "./RankingTimeseriesChart";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface RankingDetailViewProps {
   session: any;
@@ -12,7 +13,7 @@ interface RankingDetailViewProps {
 const BUSINESS_TERMS: Record<string, string> = {
   "emotional_resonance": "Emotional Response",
   "visual_engagement": "Visual Processing Intensity",
-  "attention_capture": "Hook Strength",
+  "attention_capture": "Overall Engagement",
   "sustained_focus": "Sustained Attention",
   "novelty_salience": "Surprise & Novelty",
   "auditory_impact": "Auditory Processing",
@@ -42,7 +43,9 @@ export function RankingDetailView({ session }: RankingDetailViewProps) {
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
       
       {/* Left Column: Leaderboard */}
-      <div className="xl:col-span-1 space-y-4">
+      <ScrollArea className="h-[70vh] xl:col-span-1 space-y-4">
+
+      <div className="">
         <div className="bg-glass-bg border border-glass-border rounded-xl p-5">
           <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
             <Trophy className="w-5 h-5 text-accent-emerald" />
@@ -88,9 +91,12 @@ export function RankingDetailView({ session }: RankingDetailViewProps) {
           </div>
         </div>
       </div>
+      </ScrollArea>
 
       {/* Right Column: Details & Chart */}
-      <div className="xl:col-span-2 space-y-6">
+      <ScrollArea className="h-[70vh] xl:col-span-2 space-y-6">
+
+      <div className="">
         
         {/* Selected Video Breakdown */}
         {activeVideo && (
@@ -203,6 +209,7 @@ export function RankingDetailView({ session }: RankingDetailViewProps) {
         )}
 
       </div>
+      </ScrollArea>
     </div>
   );
 }
