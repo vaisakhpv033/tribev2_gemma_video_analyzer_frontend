@@ -12,16 +12,18 @@ interface RankingDetailViewProps {
   onSessionUpdated?: (session: any) => void;
 }
 
+
+
 const BUSINESS_TERMS: Record<string, string> = {
-  "emotional_resonance": "Emotional Response",
-  "visual_engagement": "Visual Processing Intensity",
-  "attention_capture": "Overall Engagement",
-  "sustained_focus": "Sustained Attention",
-  "novelty_salience": "Surprise & Novelty",
-  "auditory_impact": "Auditory Processing",
-  "memory_encoding": "Memory Encoding",
-  "narrative_language": "Narrative Clarity",
-};
+    "emotional_resonance": "Emotional Response",
+    "visual_engagement": "Visual Processing",
+    "attention_capture": "Attention/Hook Strength",
+    "sustained_focus": "Sustained Focus",
+    "novelty_salience": "Surprise & Novelty",
+    "auditory_impact": "Auditory Processing",
+    "memory_encoding": "Memory Encoding",
+    "narrative_language": "Narrative Clarity",
+  };
 
 export function RankingDetailView({ session, onSessionUpdated }: RankingDetailViewProps) {
   const sortedVideos = [...(session.videos || [])].sort((a, b) => (a.rank || 0) - (b.rank || 0));

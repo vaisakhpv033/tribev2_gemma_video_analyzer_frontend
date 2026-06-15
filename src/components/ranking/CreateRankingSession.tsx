@@ -29,8 +29,8 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
   const BUSINESS_TERMS: Record<string, string> = {
     "emotional_resonance": "Emotional Response",
     "visual_engagement": "Visual Processing",
-    "attention_capture": "Overall Engagement",
-    "sustained_focus": "Sustained Attention",
+    "attention_capture": "Attention/Hook Strength",
+    "sustained_focus": "Sustained Focus",
     "novelty_salience": "Surprise & Novelty",
     "auditory_impact": "Auditory Processing",
     "memory_encoding": "Memory Encoding",
