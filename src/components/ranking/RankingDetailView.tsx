@@ -37,7 +37,7 @@ export function RankingDetailView({ session, onSessionUpdated }: RankingDetailVi
     { id: "global", label: "Overall Engagement" },
     { id: "emotional", label: "Emotional Response" },
     { id: "visual", label: "Visual Processing" },
-    { id: "dorsattn_net", label: "Sustained Attention" },
+    { id: "dorsattn_net", label: "Sustained Focus" },
     { id: "salventattn_net", label: "Surprise & Novelty" },
     { id: "auditory", label: "Auditory Processing" },
     { id: "memory", label: "Memory Encoding" },

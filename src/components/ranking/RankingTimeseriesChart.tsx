@@ -37,7 +37,7 @@ export function RankingTimeseriesChart({ videos, activeVideoId, activeFeature }:
     },
     {
       id: "dorsattn_net",
-      label: "Sustained Attention",
+      label: "Sustained Focus",
       key: "dorsattn_net",
       desc: "Measures the brain's Dorsal Attention Network. High values mean the viewer is intensely focused on the screen, not daydreaming.",
     },
