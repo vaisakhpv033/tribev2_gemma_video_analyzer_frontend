@@ -37,6 +37,7 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
     "narrative_language": "Narrative Clarity",
   };
 
+  const [uploadType, setUploadType] = useState<"npz" | "video">("npz");
   const [presets, setPresets] = useState<{id: string, name: string}[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,12 +52,35 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selected = Array.from(e.target.files);
-      const valid = selected.filter(f => f.name.endsWith('.npz'));
-      if (valid.length !== selected.length) {
-        setError("Only .npz files are allowed.");
+      
+      if (uploadType === "npz") {
+        const valid = selected.filter(f => f.name.endsWith('.npz'));
+        if (valid.length !== selected.length) {
+          setError("Only .npz files are allowed.");
+        } else {
+          setError(null);
+          setFiles(prev => [...prev, ...valid]);
+        }
       } else {
-        setError(null);
-        setFiles(prev => [...prev, ...valid]);
+        const validExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm'];
+        const valid = selected.filter(f => validExtensions.some(ext => f.name.toLowerCase().endsWith(ext)));
+        if (valid.length !== selected.length) {
+          setError(`Only video files (${validExtensions.join(', ')}) are allowed.`);
+        } else {
+          const validSize = valid.filter(f => f.size <= 500 * 1024 * 1024);
+          if (validSize.length !== valid.length) {
+            setError("Some videos exceed the 500MB size limit.");
+          } else {
+            setError(null);
+            const newFiles = [...files, ...validSize];
+            if (newFiles.length > 10) {
+              setError("Maximum 10 videos allowed.");
+              setFiles(newFiles.slice(0, 10));
+            } else {
+              setFiles(newFiles);
+            }
+          }
+        }
       }
     }
   };
@@ -69,6 +93,11 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
     e.preventDefault();
     if (files.length < 2) {
       setError("Please upload at least 2 .npz files to create a ranking comparison.");
+      return;
+    }
+
+    if (uploadType === "video" && files.length > 10) {
+      setError("Please upload a maximum of 10 videos.");
       return;
     }
 
@@ -95,11 +124,15 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
     }
 
     files.forEach(file => {
-      formData.append("npz_files", file);
+      formData.append(uploadType === "video" ? "video_files" : "npz_files", file);
     });
 
+    const endpoint = uploadType === "video" 
+      ? `${API_BASE_URL}/api/v1/rankings/create-from-videos/` 
+      : `${API_BASE_URL}/api/v1/rankings/`;
+
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/rankings/`, {
+      const res = await fetch(endpoint, {
         method: "POST",
         body: formData,
       });
@@ -146,6 +179,43 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
                 placeholder="e.g., Q3 Fall Campaign Ad Testing"
                 className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-accent-blue transition-colors"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Upload Source</label>
+              <div className="flex bg-black/40 border border-white/10 rounded-lg p-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUploadType("npz");
+                    setFiles([]);
+                    setError(null);
+                  }}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+                    uploadType === "npz" ? "bg-white/10 text-white shadow-sm" : "text-text-muted hover:text-text-secondary"
+                  }`}
+                >
+                  Pre-processed .npz Files
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUploadType("video");
+                    setFiles([]);
+                    setError(null);
+                  }}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+                    uploadType === "video" ? "bg-white/10 text-white shadow-sm" : "text-text-muted hover:text-text-secondary"
+                  }`}
+                >
+                  Raw Video Files
+                </button>
+              </div>
+              {uploadType === "video" && (
+                <p className="text-xs text-accent-blue mt-2">
+                  Video uploads will spin up GPU instances to extract brain features in the background. This process takes a few minutes per video.
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -206,20 +276,26 @@ export function CreateRankingSession({ onClose, onCreated }: CreateRankingSessio
             )}
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Upload .npz Files</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">
+                {uploadType === "npz" ? "Upload .npz Files" : "Upload Video Files"}
+              </label>
               <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center bg-black/20 hover:bg-black/40 hover:border-accent-blue/50 transition-colors">
                 <input 
                   type="file" 
                   multiple 
-                  accept=".npz" 
+                  accept={uploadType === "npz" ? ".npz" : ".mp4,.mov,.avi,.mkv,.webm"} 
                   onChange={handleFileChange}
                   className="hidden" 
-                  id="npz-upload"
+                  id="file-upload"
                 />
-                <label htmlFor="npz-upload" className="cursor-pointer flex flex-col items-center">
+                <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
                   <Upload className="w-8 h-8 text-text-muted mb-3" />
                   <span className="text-sm font-medium text-text-primary">Click to select files or drag and drop</span>
-                  <span className="text-xs text-text-muted mt-1">Requires at least 2 .npz files for comparison</span>
+                  <span className="text-xs text-text-muted mt-1">
+                    {uploadType === "npz" 
+                      ? "Requires at least 2 .npz files for comparison" 
+                      : "Requires 2 to 10 video files for comparison"}
+                  </span>
                 </label>
               </div>
             </div>

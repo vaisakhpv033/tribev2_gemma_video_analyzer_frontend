@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Loader2, AlertCircle, Trash2 } from "lucide-react";
+import { ChevronLeft, Loader2, AlertCircle, Trash2, RefreshCw } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { RankingDetailView } from "@/components/ranking/RankingDetailView";
 import { API_BASE_URL } from "@/config/api";
@@ -17,6 +17,7 @@ export default function RankingDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -63,6 +64,25 @@ export default function RankingDetailPage() {
     } catch (err: any) {
       alert(err.message);
       setIsDeleting(false);
+    }
+  };
+
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/rankings/${sessionId}/retry-failed-videos/`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || "Failed to retry videos.");
+      }
+      const data = await res.json();
+      setSession(data);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setIsRetrying(false);
     }
   };
 
@@ -117,11 +137,21 @@ export default function RankingDetailPage() {
               </div>
 
               {session.status === "FAILED" ? (
-                <div className="p-6 bg-accent-rose/10 border border-accent-rose/20 rounded-xl text-accent-rose flex gap-3 items-start">
-                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-bold">Ranking Process Failed</h3>
-                    <p className="mt-1 text-sm opacity-90">{session.error_message}</p>
+                <div className="flex flex-col gap-3 w-full">
+                  <div className="p-6 bg-accent-rose/10 border border-accent-rose/20 rounded-xl text-accent-rose flex gap-3 items-start">
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <h3 className="font-bold">Ranking Process Failed</h3>
+                      <p className="mt-1 text-sm opacity-90">{session.error_message}</p>
+                    </div>
+                    <button 
+                      onClick={handleRetry}
+                      disabled={isRetrying}
+                      className="px-4 py-2 bg-accent-rose text-white rounded-lg text-sm font-medium hover:bg-accent-rose/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {isRetrying ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                      Retry Failed Videos
+                    </button>
                   </div>
                 </div>
               ) : session.status !== "COMPLETED" ? (

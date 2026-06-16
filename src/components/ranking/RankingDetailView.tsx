@@ -14,7 +14,7 @@ interface RankingDetailViewProps {
 
 
 
-const BUSINESS_TERMS: Record<string, string> = {
+const DETAIL_BUSINESS_TERMS: Record<string, string> = {
     "emotional_resonance": "Emotional Response",
     "visual_engagement": "Visual Processing",
     "attention_capture": "Attention/Hook Strength",
@@ -130,7 +130,7 @@ export function RankingDetailView({ session, onSessionUpdated }: RankingDetailVi
                       return (
                         <li key={i} className="flex items-start gap-2 text-sm text-text-primary">
                           <CheckCircle2 className="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" />
-                          <span><span className="font-medium">{BUSINESS_TERMS[dim] || dim}</span> <span className="text-text-muted text-xs">({score}</span></span>
+                          <span><span className="font-medium">{DETAIL_BUSINESS_TERMS[dim] || dim}</span> <span className="text-text-muted text-xs">({score}</span></span>
                         </li>
                       );
                     })}
@@ -152,7 +152,7 @@ export function RankingDetailView({ session, onSessionUpdated }: RankingDetailVi
                       return (
                         <li key={i} className="flex items-start gap-2 text-sm text-text-primary">
                           <AlertCircle className="w-4 h-4 text-accent-rose shrink-0 mt-0.5" />
-                          <span><span className="font-medium">{BUSINESS_TERMS[dim] || dim}</span> <span className="text-text-muted text-xs">({score}</span></span>
+                          <span><span className="font-medium">{DETAIL_BUSINESS_TERMS[dim] || dim}</span> <span className="text-text-muted text-xs">({score}</span></span>
                         </li>
                       );
                     })}
@@ -181,7 +181,7 @@ export function RankingDetailView({ session, onSessionUpdated }: RankingDetailVi
                       .sort(([, a], [, b]) => (b as number) - (a as number))
                       .map(([dim, weight]) => (
                         <div key={dim} className="bg-black/40 border border-white/5 px-2 py-1 rounded text-[10px] flex items-center gap-1.5">
-                          <span className="text-text-muted">{BUSINESS_TERMS[dim] || dim}</span>
+                          <span className="text-text-muted">{DETAIL_BUSINESS_TERMS[dim] || dim}</span>
                           <span className="text-accent-blue font-bold">{Math.round((weight as number) * 100)}%</span>
                         </div>
                       ))}
@@ -200,8 +200,8 @@ export function RankingDetailView({ session, onSessionUpdated }: RankingDetailVi
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
               {activeVideo.dimension_scores && Object.entries(activeVideo.dimension_scores).map(([dim, score]) => (
                 <div key={dim} className="bg-white/5 border border-white/5 rounded-lg p-3">
-                  <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1 line-clamp-1" title={BUSINESS_TERMS[dim] || dim}>
-                    {BUSINESS_TERMS[dim] || dim}
+                  <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1 line-clamp-1" title={DETAIL_BUSINESS_TERMS[dim] || dim}>
+                    {DETAIL_BUSINESS_TERMS[dim] || dim}
                   </div>
                   <div className="text-lg font-bold text-white">
                     {(score as number).toFixed(0)}<span className="text-[10px] text-text-muted font-normal ml-0.5">/100</span>

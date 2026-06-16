@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Loader2, Settings2 } from "lucide-react";
 import { API_BASE_URL } from "@/config/api";
 
-const BUSINESS_TERMS: Record<string, string> = {
+const TWEAK_BUSINESS_TERMS: Record<string, string> = {
     "emotional_resonance": "Emotional Response",
     "visual_engagement": "Visual Processing",
     "attention_capture": "Attention/Hook Strength",
@@ -36,7 +36,7 @@ export function TweakWeightsModal({ isOpen, onClose, session, onSuccess }: Tweak
       });
       
       // Ensure all 8 keys exist
-      Object.keys(BUSINESS_TERMS).forEach(k => {
+      Object.keys(TWEAK_BUSINESS_TERMS).forEach(k => {
         if (initial[k] === undefined) initial[k] = 5;
       });
 
@@ -114,7 +114,7 @@ export function TweakWeightsModal({ isOpen, onClose, session, onSuccess }: Tweak
                 {Object.entries(customWeights).map(([key, val]) => (
                   <div key={key}>
                     <div className="flex justify-between items-center mb-1">
-                      <label className="text-xs text-text-secondary">{BUSINESS_TERMS[key] || key}</label>
+                      <label className="text-xs text-text-secondary">{TWEAK_BUSINESS_TERMS[key] || key}</label>
                       <span className="text-xs font-bold text-accent-blue">{val}/10</span>
                     </div>
                     <input
