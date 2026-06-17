@@ -62,10 +62,17 @@ export function Header({ onNewAnalysis, analyses = [], activeAnalysisId = null, 
             </Link>
             <Link 
               href="/ranking"
-              className="block px-4 py-3 text-sm text-text-primary hover:bg-white/5 transition-colors"
+              className="block px-4 py-3 text-sm text-text-primary hover:bg-white/5 transition-colors border-b border-white/5"
               onClick={() => setIsDropdownOpen(false)}
             >
               Multi-Video Neural Ranking
+            </Link>
+            <Link 
+              href="/compare-videos"
+              className="block px-4 py-3 text-sm text-text-primary hover:bg-white/5 transition-colors"
+              onClick={() => setIsDropdownOpen(false)}
+            >
+              Compare Two Videos
             </Link>
           </div>
         )}
