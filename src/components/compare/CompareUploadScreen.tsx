@@ -62,8 +62,8 @@ export function CompareUploadScreen({ onUploadSuccess }: { onUploadSuccess: (id:
     <div className="w-full animate-fade-in">
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-2">Video Creative Comparator</h2>
-        <p className="text-text-secondary mb-10">
-          Upload two mobile game ad videos. We will extract the audio via Gemini Flash, strip it, and run a Gemma 4 (31B) synthesis to determine the winner based on visual and audio hooks.
+        <p className="text-text-secondary mb-10 max-w-3xl mx-auto">
+          Upload two mobile game ad videos. We will first extract cognitive & emotional brainwave metrics via TRIBEv2 Neural Ranking (GPU Pods), then extract audio hooks via Gemini Flash, and finally run a Gemma 4 synthesis to determine the winner based on neural, visual, and audio data.
         </p>
         
         <form onSubmit={handleSubmit}>

@@ -5,25 +5,8 @@ import { Loader2 } from "lucide-react";
 import { API_BASE_URL } from "@/config/api";
 
 export function CompareProcessingScreen({ comparisonId, onComplete }: { comparisonId: string, onComplete: (item: any) => void }) {
-  const [loadingText, setLoadingText] = useState("Initializing Gemma 4 Comparison...");
-
-  useEffect(() => {
-    const texts = [
-      "Uploading to Gemini File Service...",
-      "Extracting audio hooks via Gemini 2.5 Flash...",
-      "Stripping audio locally...",
-      "Running Gemma 31B synthesis...",
-      "Comparing hooks and messaging...",
-      "Finalizing audit..."
-    ];
-    let i = 0;
-    const interval = setInterval(() => {
-      i = (i + 1) % texts.length;
-      setLoadingText(texts[i]);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const [loadingText, setLoadingText] = useState("Initializing Pipeline...");
+  const [sessionStatus, setSessionStatus] = useState("Analyzing Videos");
 
   useEffect(() => {
     const pollStatus = async () => {
@@ -31,6 +14,18 @@ export function CompareProcessingScreen({ comparisonId, onComplete }: { comparis
         const res = await fetch(`${API_BASE_URL}/api/v1/comparator/${comparisonId}/`);
         if (res.ok) {
           const item = await res.json();
+          
+          if (item.ranking_session) {
+            const rStat = item.ranking_session.status;
+            if (rStat === "PROCESSING" || rStat === "PENDING") {
+              setSessionStatus("Running TRIBEv2 Neural Ranking (GPU Pods)");
+              setLoadingText("Extracting cognitive & emotional brainwave metrics...");
+            } else if (rStat === "COMPLETED") {
+              setSessionStatus("Neural Ranking Complete");
+              setLoadingText("Running Gemma 31B synthesis with Neural Context...");
+            }
+          }
+          
           if (item.status === "COMPLETED" || item.status === "FAILED") {
             onComplete(item);
           }
@@ -40,7 +35,8 @@ export function CompareProcessingScreen({ comparisonId, onComplete }: { comparis
       }
     };
 
-    const intervalId = setInterval(pollStatus, 5000);
+    const intervalId = setInterval(pollStatus, 4000);
+    pollStatus(); // initial fetch
     return () => clearInterval(intervalId);
   }, [comparisonId, onComplete]);
 
@@ -52,8 +48,8 @@ export function CompareProcessingScreen({ comparisonId, onComplete }: { comparis
           <Loader2 className="w-8 h-8 text-brand-primary animate-pulse" />
         </div>
       </div>
-      <h3 className="text-xl font-semibold mt-8 mb-2">Analyzing Videos</h3>
-      <p className="text-text-secondary animate-pulse">{loadingText}</p>
+      <h3 className="text-xl font-semibold mt-8 mb-2">{sessionStatus}</h3>
+      <p className="text-text-secondary animate-pulse text-center max-w-md">{loadingText}</p>
     </div>
   );
 }

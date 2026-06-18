@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { API_BASE_URL } from "@/config/api";
 import Link from "next/link";
-import { Plus, Clock, Trophy, PlaySquare } from "lucide-react";
+import { Plus, Clock, Trophy, PlaySquare, Brain } from "lucide-react";
 
 export default function CompareVideosListPage() {
   const [comparisons, setComparisons] = useState<any[]>([]);
@@ -91,13 +91,20 @@ export default function CompareVideosListPage() {
                           {new Date(item.created_at).toLocaleDateString()}
                         </span>
                       </div>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        item.status === 'COMPLETED' ? 'bg-accent-emerald/20 text-accent-emerald' : 
-                        item.status === 'FAILED' ? 'bg-accent-rose/20 text-accent-rose' : 
-                        'bg-brand-primary/20 text-brand-primary'
-                      }`}>
-                        {item.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {item.status === 'COMPLETED' && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-brand-primary/20 text-brand-primary flex items-center gap-1">
+                            <Brain className="w-3 h-3" /> Neural Enhanced
+                          </span>
+                        )}
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          item.status === 'COMPLETED' ? 'bg-accent-emerald/20 text-accent-emerald' : 
+                          item.status === 'FAILED' ? 'bg-accent-rose/20 text-accent-rose' : 
+                          'bg-brand-primary/20 text-brand-primary'
+                        }`}>
+                          {item.status}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="flex-1 space-y-3 mb-6">

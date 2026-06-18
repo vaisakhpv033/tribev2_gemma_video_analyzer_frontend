@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, CheckCircle2, XCircle, MessageSquare, Target } from "lucide-react";
+import { NeuralMetricsSection } from "./NeuralMetricsSection";
 
 export function CompareDashboard({ data }: { data: any }) {
   if (!data || !data.raw_analysis) return null;
@@ -14,18 +15,42 @@ export function CompareDashboard({ data }: { data: any }) {
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-fade-in pb-12">
-      {/* Header / Winner Banner */}
-      <Card className="bg-glass-bg border-glass-border backdrop-blur-md p-8 rounded-2xl text-center relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-[image:var(--background-image-grad-primary)]"></div>
-        <Trophy className="w-16 h-16 text-brand-primary mx-auto mb-4" />
-        <h1 className="text-3xl font-bold mb-2">Comparison Results</h1>
-        <div className="inline-block mt-4 px-6 py-2 rounded-full bg-white/5 border border-white/10">
-          <span className="text-text-secondary mr-2">Winner:</span>
-          <span className="font-bold text-lg text-brand-primary uppercase">
-            {winner === "tie" ? "Tie" : winner === "video1" ? "Video 1" : "Video 2"}
-          </span>
+      {/* Side-by-side Videos */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="relative rounded-2xl overflow-hidden bg-black/40 border border-glass-border aspect-[9/16] lg:aspect-video flex flex-col shadow-xl">
+          <div className="absolute top-0 w-full p-4 bg-gradient-to-b from-black/80 to-transparent z-10 flex justify-between items-start">
+            <span className="text-white/80 font-medium text-sm truncate max-w-[70%]">{data.video1_name}</span>
+            {winner === "video1" && (
+              <div className="bg-brand-primary text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 animate-in zoom-in">
+                <Trophy className="w-3.5 h-3.5" /> Winner
+              </div>
+            )}
+            {winner === "tie" && (
+              <div className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5">
+                <Trophy className="w-3.5 h-3.5" /> Tie
+              </div>
+            )}
+          </div>
+          <video src={data.video1_file} controls className="w-full h-full object-contain" />
         </div>
-      </Card>
+
+        <div className="relative rounded-2xl overflow-hidden bg-black/40 border border-glass-border aspect-[9/16] lg:aspect-video flex flex-col shadow-xl">
+          <div className="absolute top-0 w-full p-4 bg-gradient-to-b from-black/80 to-transparent z-10 flex justify-between items-start">
+            <span className="text-white/80 font-medium text-sm truncate max-w-[70%]">{data.video2_name}</span>
+            {winner === "video2" && (
+              <div className="bg-brand-primary text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 animate-in zoom-in">
+                <Trophy className="w-3.5 h-3.5" /> Winner
+              </div>
+            )}
+            {winner === "tie" && (
+              <div className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5">
+                <Trophy className="w-3.5 h-3.5" /> Tie
+              </div>
+            )}
+          </div>
+          <video src={data.video2_file} controls className="w-full h-full object-contain" />
+        </div>
+      </div>
 
       {/* Side-by-side Strengths / Weaknesses */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -89,6 +114,11 @@ export function CompareDashboard({ data }: { data: any }) {
           </div>
         </Card>
       </div>
+
+      {/* Neural Metrics (If Available) */}
+      {data.ranking_session && data.ranking_session.videos && data.ranking_session.videos.length >= 2 && (
+        <NeuralMetricsSection rankingSession={data.ranking_session} />
+      )}
 
       {/* Hook Comparison */}
       <Card className="bg-glass-bg border-glass-border p-6">

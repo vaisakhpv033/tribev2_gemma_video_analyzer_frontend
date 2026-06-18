@@ -40,6 +40,25 @@ export default function CompareVideoDetailPage() {
     setActiveItem(item);
   };
 
+  const handleRetry = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE_URL}/api/v1/comparator/${id}/retry/`, {
+        method: "POST"
+      });
+      if (res.ok) {
+        fetchAnalysis();
+      } else {
+        const errData = await res.json();
+        alert("Retry failed: " + (errData.detail || "Unknown error"));
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error("Retry error:", err);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Header 
@@ -80,6 +99,9 @@ export default function CompareVideoDetailPage() {
             </div>
 
             <div className="flex justify-center gap-4">
+              <Button onClick={handleRetry} className="bg-brand-primary text-white hover:bg-brand-primary/90">
+                Retry Analysis
+              </Button>
               <Link href="/compare-videos">
                 <Button variant="outline" className="bg-glass-bg border-glass-border">
                   Back to List
