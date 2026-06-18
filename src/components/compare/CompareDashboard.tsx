@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, CheckCircle2, XCircle, MessageSquare, Target } from "lucide-react";
+import { Trophy, CheckCircle2, XCircle, MessageSquare, Target, Brain } from "lucide-react";
 import { NeuralMetricsSection } from "./NeuralMetricsSection";
 
 export function CompareDashboard({ data }: { data: any }) {
@@ -81,6 +81,28 @@ export function CompareDashboard({ data }: { data: any }) {
                 ))}
               </ul>
             </div>
+            
+            {video1_analysis?.gameplay_and_narrative_clarity && (
+              <div>
+                <h3 className="flex items-center gap-2 text-white font-medium mb-3 text-sm uppercase tracking-wider">
+                  <Target className="w-4 h-4 text-brand-primary" /> Gameplay & Narrative Clarity
+                </h3>
+                <p className="text-sm text-text-secondary bg-white/5 p-3 rounded-lg border border-white/5">
+                  {video1_analysis.gameplay_and_narrative_clarity}
+                </p>
+              </div>
+            )}
+            
+            {video1_analysis?.neural_alignment && (
+              <div>
+                <h3 className="flex items-center gap-2 text-white font-medium mb-3 text-sm uppercase tracking-wider">
+                  <Brain className="w-4 h-4 text-brand-primary" /> Neural Alignment
+                </h3>
+                <p className="text-sm text-text-secondary bg-brand-primary/10 p-3 rounded-lg border border-brand-primary/20">
+                  {video1_analysis.neural_alignment}
+                </p>
+              </div>
+            )}
           </div>
         </Card>
 
@@ -111,6 +133,28 @@ export function CompareDashboard({ data }: { data: any }) {
                 ))}
               </ul>
             </div>
+
+            {video2_analysis?.gameplay_and_narrative_clarity && (
+              <div>
+                <h3 className="flex items-center gap-2 text-white font-medium mb-3 text-sm uppercase tracking-wider">
+                  <Target className="w-4 h-4 text-brand-primary" /> Gameplay & Narrative Clarity
+                </h3>
+                <p className="text-sm text-text-secondary bg-white/5 p-3 rounded-lg border border-white/5">
+                  {video2_analysis.gameplay_and_narrative_clarity}
+                </p>
+              </div>
+            )}
+            
+            {video2_analysis?.neural_alignment && (
+              <div>
+                <h3 className="flex items-center gap-2 text-white font-medium mb-3 text-sm uppercase tracking-wider">
+                  <Brain className="w-4 h-4 text-brand-primary" /> Neural Alignment
+                </h3>
+                <p className="text-sm text-text-secondary bg-brand-primary/10 p-3 rounded-lg border border-brand-primary/20">
+                  {video2_analysis.neural_alignment}
+                </p>
+              </div>
+            )}
           </div>
         </Card>
       </div>
@@ -142,8 +186,8 @@ export function CompareDashboard({ data }: { data: any }) {
           </div>
         </div>
         <div className="bg-white/5 rounded-xl p-4 text-sm text-text-secondary leading-relaxed">
-          <strong className="text-white block mb-1">Analysis:</strong>
-          {hook_comparison?.comparison_analysis}
+          <strong className="text-white block mb-1">Attention Capture Analysis:</strong>
+          {hook_comparison?.attention_capture_analysis || hook_comparison?.comparison_analysis}
         </div>
       </Card>
 
@@ -163,8 +207,8 @@ export function CompareDashboard({ data }: { data: any }) {
           </div>
         </div>
         <div className="bg-white/5 rounded-xl p-4 text-sm text-text-secondary leading-relaxed">
-          <strong className="text-white block mb-1">Analysis:</strong>
-          {messaging_comparison?.comparison_analysis}
+          <strong className="text-white block mb-1">Cognitive Retention Analysis:</strong>
+          {messaging_comparison?.cognitive_retention_analysis || messaging_comparison?.comparison_analysis}
         </div>
       </Card>
 
@@ -174,8 +218,8 @@ export function CompareDashboard({ data }: { data: any }) {
           <h2 className="text-2xl font-bold mb-6 text-white">Final Audit & Recommendations</h2>
           
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-brand-primary mb-2">Why the Winner Won</h3>
-            <p className="text-text-secondary leading-relaxed">{audit?.why_winner_won}</p>
+            <h3 className="text-lg font-semibold text-brand-primary mb-2">Neural-Backed Winner Justification</h3>
+            <p className="text-text-secondary leading-relaxed">{audit?.neural_backed_winner_justification || audit?.why_winner_won}</p>
           </div>
 
           <div className="bg-brand-primary/10 border border-brand-primary/20 rounded-xl p-6">
