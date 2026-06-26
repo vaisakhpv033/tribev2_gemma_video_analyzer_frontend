@@ -139,7 +139,7 @@ export function AnalysisDashboard({ data, onReanalyze, onRefresh }: { data: any,
           <BrainAnalysisPanel data={data} onUpdate={onRefresh} />
 
           {/* Scores */}
-          <div className="grid grid-cols-2 gap-6">
+          {/* <div className="grid grid-cols-2 gap-6">
             <RadialGauge
               value={score}
               maxVal={10}
@@ -155,7 +155,7 @@ export function AnalysisDashboard({ data, onReanalyze, onRefresh }: { data: any,
               desc="First 3s retention potential (1 - 10)"
               type="hook"
             />
-          </div>
+          </div> */}
 
           {/* Trope Analysis */}
           <div className="bg-glass-bg border border-glass-border rounded-2xl p-6">

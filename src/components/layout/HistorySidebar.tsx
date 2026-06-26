@@ -36,9 +36,10 @@ export function HistorySidebar({ analyses, activeAnalysisId, onSelectAnalysis }:
                 {item.original_name}
               </div>
               {item.status === "COMPLETED" ? (
-                <span className="bg-[image:var(--background-image-grad-primary)] text-white px-2 py-0.5 rounded text-xs font-bold">
-                  {item.creative_score?.toFixed(1) || "0.0"}
-                </span>
+                <span></span>
+                // <span className="bg-[image:var(--background-image-grad-primary)] text-white px-2 py-0.5 rounded text-xs font-bold">
+                //   {item.creative_score?.toFixed(1) || "0.0"}
+                // </span>
               ) : (
                 <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase border ${
                   item.status === 'PROCESSING' ? 'bg-accent-blue/15 text-accent-blue border-accent-blue/30' :
